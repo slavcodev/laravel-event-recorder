@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<psalm
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="https://getpsalm.org/schema/config"
+  xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+  cacheDirectory=".cache/psalm"
+  findUnusedBaselineEntry="true"
+  findUnusedCode="true"
+  findUnusedVariablesAndParams="true"
+  findUnusedPsalmSuppress="true"
+>
+  <projectFiles>
+    <directory name="src"/>
+    <ignoreFiles>
+      <directory name="vendor"/>
+    </ignoreFiles>
+  </projectFiles>
+
+  <issueHandlers>
+    <UnusedClass errorLevel="suppress"/> <!-- False positive for Behat contexts -->
+    <UnusedMethod errorLevel="suppress"/> <!-- False positive for Behat contexts -->
+    <UnusedMethodCall errorLevel="suppress"/> <!-- False positive for "assert" functions in immutable objects that only throws exceptions -->
+    <PossiblyUnusedMethod errorLevel="suppress"/> <!-- False positive for services instantiated by container -->
+    <PossiblyUnusedProperty errorLevel="suppress"/> <!-- False positive for VO, like PaymentCard being unused yet -->
+    <PossiblyUnusedReturnValue errorLevel="suppress"/> <!-- False positive -->
+  </issueHandlers>
+</psalm>

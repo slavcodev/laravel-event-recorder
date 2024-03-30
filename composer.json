@@ -1,0 +1,49 @@
+{
+  "name": "slavcodev/laravel-event-recorder",
+  "description": "Laravel Eloquent event recorder",
+  "license": "MIT",
+  "config": {
+    "discard-changes": true,
+    "optimize-autoloader": true,
+    "sort-packages": true
+  },
+  "authors": [
+    {"email": "slavcopost@gmail.com", "name": "Veaceslav Medvedev"}
+  ],
+  "minimum-stability": "stable",
+  "repositories": [],
+  "require": {
+    "php": "~7.3 || ~8.0",
+    "laravel/framework": "*"
+  },
+  "require-dev": {
+    "php-cs-fixer/shim": "*",
+    "psalm/phar": "*",
+    "phpunit/phpunit": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Slavcodev\\Laravel\\Events\\": ["src"],
+      "Slavcodev\\Laravel\\Events\\Tests\\": ["tests"]
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-main": "1.x-dev"
+    }
+  },
+  "scripts": {
+    "test-code": "phpunit --colors=always --testsuite=unit",
+    "test-sca": "psalm.phar --find-dead-code=always --show-info=false --long-progress",
+    "fix-cs": "php-cs-fixer fix -v --diff --ansi",
+    "test-cs": "@fix-cs --dry-run",
+    "lint": [
+      "@test-cs",
+      "@test-sca"
+    ],
+    "test": [
+      "@lint",
+      "@test-code"
+    ]
+  }
+}
