@@ -1,0 +1,11 @@
+# Ignore all dot-files by defaults, except explicetily allowed.
+.*
+!.cache
+!.github
+!.editorconfig
+!.gitattributes
+!.gitignore
+!.php-cs-fixer.php
+
+# Ignore vendor files
+/vendor/
