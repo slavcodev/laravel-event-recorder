@@ -1,0 +1,68 @@
+name: "phpunit"
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+      statuses: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['7.3', '8.2', '8.3']
+        laravel-version: ['~7.0', '~10.0', '~11.0']
+
+    env:
+      XDEBUG_MODE: "coverage"
+      EXECUTE_COVERAGE: ${{ matrix.php-version == '8.3' }} && ${{ matrix.laravel-version == '~11.0' }}
+      CLOVER_PATH: "logs/clover.xml"
+      COVERAGE_HTML_PATH: "logs/coverage"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@master
+        with:
+          php-version: ${{ matrix.php-version }}
+          ini-values: xdebug.mode=${{ env.XDEBUG_MODE }}
+
+      - run: echo "COMPOSER_CACHE_DIR=$(composer config cache-files-dir)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v4
+        with:
+          path: ${{ env.COMPOSER_CACHE_DIR }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - run: composer install --no-interaction
+
+      - run: composer require "laravel/framework:${{ matrix.laravel-version }}"
+
+      - if: env.EXECUTE_COVERAGE != 'true'
+        run: composer run test-code -- --testdox
+
+      - if: env.EXECUTE_COVERAGE == 'true'
+        run: composer run test-code -- --testdox --coverage-clover ${{ env.CLOVER_PATH }} --coverage-html ${{ env.COVERAGE_HTML_PATH }}
+
+      - if: env.EXECUTE_COVERAGE == 'true'
+        uses: slavcodev/coverage-monitor-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          coverage_path: ${{ env.CLOVER_PATH }}
+          threshold_alert: 90
+          threshold_warning: 100
+
+      - if: env.EXECUTE_COVERAGE == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Test coverage report
+          path: ${{ env.COVERAGE_HTML_PATH }}
